@@ -1,0 +1,206 @@
+services:
+  # -----------------------------------------------------------------
+  # MongoDB — persistent volume for data
+  # -----------------------------------------------------------------
+  mongo:
+    image: mongo:7
+    container_name: dfs-mongo
+    environment:
+      MONGO_INITDB_DATABASE: distributed-storage
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - dfs-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # -----------------------------------------------------------------
+  # Metadata server — built from src/Dockerfile
+  # -----------------------------------------------------------------
+  metadata:
+    build:
+      context: .
+      dockerfile: src/Dockerfile
+    container_name: dfs-metadata
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      PORT: 3000
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - dfs-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3000/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # -----------------------------------------------------------------
+  # Storage nodes — all use the same reusable image
+  # Differentiated via PORT and STORAGE_DIR env vars
+  # -----------------------------------------------------------------
+  storage-1:
+    build:
+      context: storage-node
+      dockerfile: Dockerfile
+    container_name: dfs-storage-1
+    environment:
+      PORT: 5001
+      STORAGE_DIR: /app/storage
+    ports:
+      - "5001:5001"
+    networks:
+      - dfs-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:5001/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  storage-2:
+    build:
+      context: storage-node
+      dockerfile: Dockerfile
+    container_name: dfs-storage-2
+    environment:
+      PORT: 5002
+      STORAGE_DIR: /app/storage
+    ports:
+      - "5002:5002"
+    networks:
+      - dfs-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:5002/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  storage-3:
+    build:
+      context: storage-node
+      dockerfile: Dockerfile
+    container_name: dfs-storage-3
+    environment:
+      PORT: 5003
+      STORAGE_DIR: /app/storage
+    ports:
+      - "5003:5003"
+    networks:
+      - dfs-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:5003/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  storage-4:
+    build:
+      context: storage-node
+      dockerfile: Dockerfile
+    container_name: dfs-storage-4
+    environment:
+      PORT: 5004
+      STORAGE_DIR: /app/storage
+    ports:
+      - "5004:5004"
+    networks:
+      - dfs-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:5004/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # -----------------------------------------------------------------
+  # One-off registration job — runs once after all nodes are healthy
+  # Registers the 4 storage nodes with the metadata server via POST /nodes
+  # -----------------------------------------------------------------
+  register:
+    image: node:20-alpine
+    container_name: dfs-register
+    environment:
+      METADATA_URL: http://metadata:3000
+    depends_on:
+      metadata:
+        condition: service_healthy
+      storage-1:
+        condition: service_healthy
+      storage-2:
+        condition: service_healthy
+      storage-3:
+        condition: service_healthy
+      storage-4:
+        condition: service_healthy
+    volumes:
+      - ./docker/register-nodes.js:/register-nodes.js
+    command: ["node", "/register-nodes.js"]
+    networks:
+      - dfs-network
+    restart: "no"
+
+  # -----------------------------------------------------------------
+  # Frontend — Vite build served by nginx
+  # Proxies /api/* to metadata, /node/<port>/* to storage nodes
+  # -----------------------------------------------------------------
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    container_name: dfs-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      metadata:
+        condition: service_healthy
+    networks:
+      - dfs-network
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
+
+networks:
+  dfs-network:
+    driver: bridge

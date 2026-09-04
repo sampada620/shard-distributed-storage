@@ -1,0 +1,23 @@
+@import 'tailwindcss';
+
+:root {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+}
+
+/* Allow the Vortex canvas to fill its container without scrollbars. */
+canvas {
+  display: block;
+}

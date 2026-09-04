@@ -1,0 +1,3 @@
+Hello from the distributed file storage system!
+This is Stage 1 — single storage node test.
+If you can read this after uploading and fetching, everything works!

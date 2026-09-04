@@ -1,0 +1,13 @@
+{
+  "name": "chunker",
+  "version": "1.0.0",
+  "description": "Stage 2 — split files into 4 MB chunks and upload/download via storage node",
+  "main": "chunker.js",
+  "scripts": {
+    "test": "node test-chunker.js"
+  },
+  "dependencies": {
+    "form-data": "^4.0.0",
+    "node-fetch": "^2.7.0"
+  }
+}

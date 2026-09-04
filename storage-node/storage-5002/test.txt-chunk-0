@@ -1,0 +1,10 @@
+This is a test file for the distributed file storage system.
+
+Line 1: The quick brown fox jumps over the lazy dog.
+Line 2: Pack my box with five dozen liquor jugs.
+Line 3: How vividly daft jumping zebras vex.
+Line 4: Sphinx of black quartz, judge my vow.
+Line 5: The five boxing wizards jump quickly.
+
+Stage: 1 — Single storage node
+Purpose: Testing the POST /upload and GET /chunk endpoints

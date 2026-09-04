@@ -1,0 +1,40 @@
+# Claude
+.claude/
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment variables
+.env
+.env.*
+
+# Docker
+docker-compose.override.yml
+
+# Build outputs
+dist/
+build/
+frontend/dist/
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+
+# Misc
+.npm
+.yarn
+
+# Docker volumes
+mongo-data/
