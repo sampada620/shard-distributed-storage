@@ -1,21 +1,12 @@
-// ============================================================
-// docker/register-nodes.js
-// Registers all 4 storage nodes with the metadata server.
-// Runs once after all containers are healthy.
-//
-// Usage:  node register-nodes.js
-// Env:    METADATA_URL  (default: http://localhost:3000)
-// ============================================================
-
 "use strict";
 
 const http = require("http");
 
 const NODES = [
-  { nodeId: "node-5001", port: 5001, status: "active" },
-  { nodeId: "node-5002", port: 5002, status: "active" },
-  { nodeId: "node-5003", port: 5003, status: "active" },
-  { nodeId: "node-5004", port: 5004, status: "active" },
+  { nodeId: "node-5001", port: 5001, url: process.env.STORAGE_1_URL || "http://storage-1:5001", status: "active" },
+  { nodeId: "node-5002", port: 5002, url: process.env.STORAGE_2_URL || "http://storage-2:5002", status: "active" },
+  { nodeId: "node-5003", port: 5003, url: process.env.STORAGE_3_URL || "http://storage-3:5003", status: "active" },
+  { nodeId: "node-5004", port: 5004, url: process.env.STORAGE_4_URL || "http://storage-4:5004", status: "active" },
 ];
 
 const METADATA_URL = process.env.METADATA_URL || "http://metadata:3000";

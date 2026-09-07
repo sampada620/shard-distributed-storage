@@ -2,12 +2,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const { FileModel, Chunk, Node, ReplicationLog } = require('./db/schema');
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*'
+}));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/distributed-storage', {

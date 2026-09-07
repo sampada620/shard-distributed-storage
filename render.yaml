@@ -1,0 +1,81 @@
+services:
+  - type: web
+    name: dfs-metadata
+    runtime: docker
+    dockerfilePath: ./src/Dockerfile
+    envVars:
+      - key: MONGODB_URI
+        sync: false   # set manually in Render dashboard
+      - key: PORT
+        value: 3000
+      - key: CORS_ORIGIN
+        value: https://dfs-frontend.onrender.com
+    healthCheckPath: /health
+
+  - type: web
+    name: dfs-storage-1
+    runtime: docker
+    dockerfilePath: ./storage-node/Dockerfile
+    envVars:
+      - key: PORT
+        value: 5001
+      - key: STORAGE_DIR
+        value: /app/storage
+      - key: PUBLIC_URL
+        value: https://dfs-storage-1.onrender.com
+    healthCheckPath: /health
+
+  - type: web
+    name: dfs-storage-2
+    runtime: docker
+    dockerfilePath: ./storage-node/Dockerfile
+    envVars:
+      - key: PORT
+        value: 5002
+      - key: STORAGE_DIR
+        value: /app/storage
+      - key: PUBLIC_URL
+        value: https://dfs-storage-2.onrender.com
+    healthCheckPath: /health
+
+  - type: web
+    name: dfs-storage-3
+    runtime: docker
+    dockerfilePath: ./storage-node/Dockerfile
+    envVars:
+      - key: PORT
+        value: 5003
+      - key: STORAGE_DIR
+        value: /app/storage
+      - key: PUBLIC_URL
+        value: https://dfs-storage-3.onrender.com
+    healthCheckPath: /health
+
+  - type: web
+    name: dfs-storage-4
+    runtime: docker
+    dockerfilePath: ./storage-node/Dockerfile
+    envVars:
+      - key: PORT
+        value: 5004
+      - key: STORAGE_DIR
+        value: /app/storage
+      - key: PUBLIC_URL
+        value: https://dfs-storage-4.onrender.com
+    healthCheckPath: /health
+
+  - type: web
+    name: dfs-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    envVars:
+      - key: METADATA_URL
+        value: https://dfs-metadata.onrender.com
+      - key: STORAGE_1_URL
+        value: https://dfs-storage-1.onrender.com
+      - key: STORAGE_2_URL
+        value: https://dfs-storage-2.onrender.com
+      - key: STORAGE_3_URL
+        value: https://dfs-storage-3.onrender.com
+      - key: STORAGE_4_URL
+        value: https://dfs-storage-4.onrender.com

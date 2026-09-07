@@ -1,0 +1,28 @@
+events {}
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    server {
+        listen 80;
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # Metadata server API
+        location /api/ {
+            proxy_pass ${METADATA_URL}/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        # Storage node proxy — URLs injected at startup via envsubst
+        location /node/5001/ { proxy_pass ${STORAGE_1_URL}/; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; }
+        location /node/5002/ { proxy_pass ${STORAGE_2_URL}/; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; }
+        location /node/5003/ { proxy_pass ${STORAGE_3_URL}/; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; }
+        location /node/5004/ { proxy_pass ${STORAGE_4_URL}/; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; }
+
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+    }
+}
