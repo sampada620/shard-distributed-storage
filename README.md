@@ -132,7 +132,7 @@ docker compose down -v
 
 Full system running locally via Docker — watch the demo video showing upload, replication across 4 nodes, and live fault-tolerance recovery (killing a node mid-operation and successful failover):
 
-📹 [Demo Video Link — will add here]
+📹 [Watch Demo Video](https://drive.google.com/file/d/10W9pZHT1kHEAgNg1AKSnI1U7kcoAHPWM/view?usp=sharing)
 
 ---
 
